@@ -1,4 +1,5 @@
 const ExpenditureModel = require('../models/ExpenditureModel');
+const NOT_FOUND = { status: 'not found', message: `Cannot find requested ressource`}
 
 exports.findAll = async (req, res) => {
     try {
@@ -12,7 +13,7 @@ exports.findAll = async (req, res) => {
 exports.findOne = async (req, res) => {
     try {
         const result = await ExpenditureModel.findById(req.params.id).exec()
-        res.send(result)
+        result ? res.send(result) : res.status(404).send(NOT_FOUND)
     } catch (error) {
         res.status(500).send(error)
     }
@@ -30,7 +31,7 @@ exports.create = async (req, res) => {
 exports.update = async (req, res) => {
     try {
         const result = await ExpenditureModel.findByIdAndUpdate(req.params.id, req.body, { new: true }).exec()
-        res.send(result)
+        result ? res.send(result) : res.status(404).send(NOT_FOUND)
     } catch (error) {
         res.status(500).send(error)
     }
@@ -39,7 +40,7 @@ exports.update = async (req, res) => {
 exports.remove = async (req, res) => {
     try {
         const result = await ExpenditureModel.findByIdAndDelete(req.params.id).exec()
-        res.send(result)
+        result ? res.send(result) : res.status(404).send(NOT_FOUND)
     } catch (error) {
         res.status(500).send(error)
     }
