@@ -7,7 +7,8 @@ const Expenditure = new mongoose.Schema({
     },
     amount: {
         type: Number,
-        required: true
+        required: true,
+        min: [0, 'Must be a positive number']
     },
     created: {
         type: Date,

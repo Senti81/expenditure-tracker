@@ -3,9 +3,10 @@ const cors = require('cors')
 const morgan = require('morgan')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
+const app = express()
+
 const port = process.env.PORT || 8081
 
-const app = express()
 const ExpenditureRoutes = require('./routes/ExpenditureRoutes')
 
 app.use(morgan('dev'));
