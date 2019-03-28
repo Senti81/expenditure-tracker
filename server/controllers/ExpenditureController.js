@@ -24,6 +24,7 @@ exports.create = async (req, res) => {
         const result = await new ExpenditureModel(req.body).save()
         res.status(201).send(result)
     } catch (error) {
+        console.log(error.message)
         res.status(500).send(error)
     }
 }
