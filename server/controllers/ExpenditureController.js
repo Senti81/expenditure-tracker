@@ -54,7 +54,7 @@ exports.remove = async (req, res) => {
     }
 }
 
-const sum = async (res) => {
+return sum = async (res) => {
     try {
         const result = await ExpenditureModel.aggregate([{
             $group : {
@@ -62,8 +62,8 @@ const sum = async (res) => {
                 sum : { $sum : "$amount" }
             }
         }]).exec()
-        return res.send(result)
+        res.send(result)
     } catch (error) {
-        return res.send(error)
+        res.send(error)
     }
 }
