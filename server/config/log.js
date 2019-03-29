@@ -1,10 +1,10 @@
-module.exports = (app) => {
-    const morgan = require('morgan')    
-    const path = require('path')
-    const fs = require('fs')
+const log = require('log4js')
+log.configure({
+    appenders: { expenditures: { type: 'file', filename: 'logs/expenditures.log' } },
+    categories: { default: { appenders: ['expenditures'], level: 'error' } }
+});
 
-    const logStream = fs.createWriteStream(path.join(__dirname, '../logs/expenditures.log'), { flags: 'a'})
-    
-    morgan.token('date', () => { return new Date().toLocaleString() })
-    app.use(morgan('[:date] :method :url :status :response-time ms', { stream: logStream }));
-}
+const logger = log.getLogger()
+logger.level = 'info'
+
+module.exports = logger

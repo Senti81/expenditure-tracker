@@ -12,10 +12,8 @@ app.use(cors());
 app.use(bodyParser.json());
 
 Connection()
-Log(app)
-
 ExpenditureRoutes(app)
 
 app.listen(port, () => {
-    console.log(`listening on ${port}`)
+    Log.info(`listening on ${port}`)
 });
