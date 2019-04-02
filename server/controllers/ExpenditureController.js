@@ -2,12 +2,7 @@ const ExpenditureModel = require('../models/ExpenditureModel');
 const NOT_FOUND = { status: 'not found', message: `Cannot find requested ressource`}
 const Log = require('../config/log')
 
-const moment = require('moment')
-const currentDateTime = moment().format('YYYY-MM-DD HH:mm:ss')
-
 exports.findAll = async (req, res) => {
-    if (req.query.sum == 1)
-       return sum(res)
     try {
         const result = await ExpenditureModel.find().exec()
         res.send(result)
@@ -29,7 +24,7 @@ exports.findOne = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
-        req.body.created = currentDateTime
+        req.body.created = new Date().toLocaleString()
         const result = await new ExpenditureModel(req.body).save()
         res.status(201).send(result)
     } catch (error) {
@@ -55,19 +50,5 @@ exports.remove = async (req, res) => {
     } catch (error) {
         Log.error(error.message)
         res.status(500).send(error)
-    }
-}
-
-return sum = async (res) => {
-    try {
-        const result = await ExpenditureModel.aggregate([{
-            $group : {
-                _id : "$name",
-                sum : { $sum : "$amount" }
-            }
-        }]).exec()
-        res.send(result)
-    } catch (error) {
-        res.send(error)
     }
 }
