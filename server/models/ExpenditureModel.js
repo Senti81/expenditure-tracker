@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const moment = require ('moment')
 
 const Expenditure = new mongoose.Schema({
     name: {
@@ -11,8 +12,8 @@ const Expenditure = new mongoose.Schema({
         min: [0, 'Must be a positive number']
     },
     created: {
-        type: Date,
-        default: Date.now
+        type: String,
+        default: moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
     }
 });
 
