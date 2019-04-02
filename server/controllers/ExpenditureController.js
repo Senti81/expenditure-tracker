@@ -1,8 +1,8 @@
 const ExpenditureModel = require('../models/ExpenditureModel');
 const NOT_FOUND = { status: 'not found', message: `Cannot find requested ressource`}
 const Log = require('../config/log')
-const moment = require('moment')
 
+const moment = require('moment')
 const currentDateTime = moment().format('YYYY-MM-DD HH:mm:ss')
 
 exports.findAll = async (req, res) => {

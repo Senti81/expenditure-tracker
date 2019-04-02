@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <a class="navbar-brand" href="#">Testing App</a>
+      <a class="navbar-brand" href="#">Expenditure Tracker</a>
     </nav>
-    <router-view class="container"/>
+    <router-view/>
   </div>
 </template>
 
