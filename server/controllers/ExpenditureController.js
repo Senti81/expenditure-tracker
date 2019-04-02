@@ -1,6 +1,9 @@
 const ExpenditureModel = require('../models/ExpenditureModel');
 const NOT_FOUND = { status: 'not found', message: `Cannot find requested ressource`}
 const Log = require('../config/log')
+const moment = require('moment')
+
+const currentDateTime = moment().format('YYYY-MM-DD HH:mm:ss')
 
 exports.findAll = async (req, res) => {
     if (req.query.sum == 1)
@@ -26,6 +29,7 @@ exports.findOne = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
+        req.body.created = currentDateTime
         const result = await new ExpenditureModel(req.body).save()
         res.status(201).send(result)
     } catch (error) {
