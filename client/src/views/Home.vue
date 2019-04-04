@@ -11,27 +11,35 @@
             </div>
             <button type="submit" class="btn btn-primary">Ok</button>
         </form>
-        <table class="table table-hover" style="marginTop:20px">
-            <thead>
-                <tr class="table-light">
-                    <th scope="col">Name</th>
-                    <th scope="col">Amount</th>
-                    <th scope="col">Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr @dblclick="remove(e)" class="table" v-for="e in expenditures" :key="e._id">
-                    <th scope="row">{{e.name}}</th>
-                    <td>{{formatNumber(e.amount)}}</td>
-                    <td>{{e.created}}</td>
-                </tr>
-                <tr class="table-light">
-                    <th scope="col">Total</th>
-                    <th scope="col">{{formatNumber(total)}}</th>
-                    <th scope="col"></th>
-                </tr>             
-            </tbody>
-        </table>
+
+        <div class="row">
+            <div v-for="user in users" :key="user.id" class="col-sm">
+                <h4>{{user}}</h4>
+                <table class="table table-hover" style="marginTop:20px">
+                    <thead>
+                        <tr class="table-light">
+                            <th scope="col">Name</th>
+                            <th class="amount" scope="col">Amount</th>
+                            <th scope="col">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr @dblclick="remove(e)" class="table" v-for="e in expenditures" :key="e._id">
+                            <template v-if="e.name == user">
+                                <th scope="row">{{e.name}}</th>
+                                <td class="amount">{{formatNumber(e.amount)}}</td>
+                                <td>{{e.created}}</td>
+                            </template>
+                        </tr>
+                        <tr class="table-light">
+                            <th scope="col">Total</th>
+                            <th class="amount" scope="col">{{formatNumber(sum(user))}}</th>
+                            <th scope="col"></th>
+                        </tr>             
+                    </tbody>
+                </table>
+            </div>
+         </div>
     </div>
 </template>
 
@@ -41,18 +49,19 @@
     export default {
         name: 'home',
         data: () => ({
+            users: [],
             expenditures: [],
             expenditure: {
                 name: '',
                 amount: ''
             },
         }),
-        computed: {
-            total() {
-                return this.expenditures.reduce((acc, cur) => acc + cur.amount, 0)                
-            }
-        },
         methods: {
+            sum: function (user) {
+                return this.expenditures.reduce((acc, cur) => {
+                    return cur.name == user ? acc + cur.amount : acc
+                },0)                
+            },            
             formatNumber(number) {
                 return new Intl.NumberFormat('de-DE',{
                     style: 'currency',
@@ -72,17 +81,30 @@
                 this.expenditure.amount = ''
             },
             async remove(e) {
-                const index = this.expenditures.indexOf(e)
-
                 fetch(`${API_URL}/${e._id}`, {
                     method: 'DELETE'
                 })
+
+                const index = this.expenditures.indexOf(e)
                 this.expenditures.splice(index, 1);
             }
         },
         async mounted() {
             const response = await fetch(API_URL)
-            this.expenditures = await response.json()
+            const result = await response.json()
+            this.expenditures = result
+
+            const set = new Set()
+            result.forEach(e => set.add(e.name));
+            this.users = set
+
         }
     };
 </script>
+
+<style>
+    .amount {
+        text-align: end
+    }
+</style>
+
