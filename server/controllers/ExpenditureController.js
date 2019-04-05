@@ -24,6 +24,9 @@ exports.findOne = async (req, res) => {
 
 exports.create = async (req, res) => {
     try {
+        req.body.day = new Date().getDate()
+        req.body.month = new Date().getMonth() +1
+        req.body.year = new Date().getFullYear()
         req.body.created = new Date().toLocaleString()
         const result = await new ExpenditureModel(req.body).save()
         res.status(201).send(result)
