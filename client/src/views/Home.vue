@@ -1,6 +1,6 @@
 <template>
     <div class="container-fluid">
-        <form @submit.prevent="addExpenditure">
+        <form @submit.prevent="insert">
             <div class="form-group">
                 <label for="name">Name</label>
                 <input v-model="expenditure.name" type="text" class="form-control" id="name" aria-describedby="emailHelp" required>
@@ -12,34 +12,43 @@
             <button type="submit" class="btn btn-primary">Ok</button>
         </form>
 
-        <div class="row">
-            <div v-for="user in users" :key="user.id" class="col-sm">
-                <h4>{{user}}</h4>
-                <table class="table table-hover" style="marginTop:20px">
-                    <thead>
-                        <tr class="table-light">
-                            <th scope="col">Name</th>
-                            <th class="amount" scope="col">Amount</th>
-                            <th scope="col">Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr @dblclick="remove(e)" class="table" v-for="e in expenditures" :key="e._id">
-                            <template v-if="e.name == user">
-                                <th scope="row">{{e.name}}</th>
-                                <td class="amount">{{formatNumber(e.amount)}}</td>
-                                <td>{{e.created}}</td>
-                            </template>
-                        </tr>
-                        <tr class="table-light">
-                            <th scope="col">Total</th>
-                            <th class="amount" scope="col">{{formatNumber(sum(user))}}</th>
-                            <th scope="col"></th>
-                        </tr>             
-                    </tbody>
-                </table>
+        <div v-for="n in 12" :key="n.id" class="card border-primary mb-3" style="max-width: 50rem;">
+            <div class="card-header">{{months[n-1]}}</div>
+            <div class="card-body">
+                <div class="row">
+                    <div v-for="user in users" :key="user.id" class="col-sm">
+                        <h5>{{user}}</h5>
+                        <table class="table table-hover" style="marginTop:20px">
+                            <thead>
+                                <tr class="table-light">
+                                    <th class="amount" scope="col">Amount</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="table" v-for="e in expenditures" :key="e._id">
+                                    <template v-if="e.month == n">
+                                        <template v-if="e.name == user">
+                                            <td class="amount">{{formatNumber(e.amount)}}</td>
+                                            <td>{{e.created}}</td>
+                                            <td>
+                                                <button @click="remove(e)" type="button" class="btn btn-danger">X</button>
+                                            </td>
+                                        </template>
+                                    </template>
+                                </tr>
+                                <tr class="table">
+                                    <th class="amount" scope="col">{{formatNumber(sum(user, n))}}</th>
+                                    <th scope="col"></th>
+                                    <th scope="col"></th>
+                                </tr>             
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-         </div>
+        </div>
     </div>
 </template>
 
@@ -50,6 +59,7 @@
         name: 'home',
         data: () => ({
             users: [],
+            months:['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
             expenditures: [],
             expenditure: {
                 name: '',
@@ -57,10 +67,10 @@
             },
         }),
         methods: {
-            sum: function (user) {
-                return this.expenditures.reduce((acc, cur) => {
-                    return cur.name == user ? acc + cur.amount : acc
-                },0)                
+            sum: function (user, month) {
+                return this.expenditures.reduce((acc, cur) => 
+                    cur.name == user && cur.month == month ? acc + cur.amount : acc
+                ,0)                
             },            
             formatNumber(number) {
                 return new Intl.NumberFormat('de-DE',{
@@ -68,7 +78,7 @@
                     currency: 'EUR'
                 }).format(number)
             },
-            async addExpenditure() {
+            async insert() {
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     body: JSON.stringify(this.expenditure),
@@ -76,14 +86,15 @@
                         'content-type': 'application/json'
                     }
                 })
-                this.expenditures.push(await response.json())
+
+                const result = await response.json();
+                this.expenditures.push(result)
+                this.users.add(result.name)
                 this.expenditure.name = ''
                 this.expenditure.amount = ''
             },
             async remove(e) {
-                fetch(`${API_URL}/${e._id}`, {
-                    method: 'DELETE'
-                })
+                fetch(`${API_URL}/${e._id}`, { method: 'DELETE' })
 
                 const index = this.expenditures.indexOf(e)
                 this.expenditures.splice(index, 1);
@@ -96,8 +107,7 @@
 
             const set = new Set()
             result.forEach(e => set.add(e.name));
-            this.users = set
-
+            this.users = set            
         }
     };
 </script>
